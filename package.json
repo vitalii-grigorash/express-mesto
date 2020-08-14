@@ -4,8 +4,7 @@
   "description": "`/public` — статика, полученная в результате билда фронтенд-приложения на Реакте  \r `/data` — JSON-файлы для временной эмуляции работы с базой данных  \r `/routes` — папка с файлами роутера",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +21,9 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "eslint": "^7.6.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
     "nodemon": "^2.0.4"
   }
 }
