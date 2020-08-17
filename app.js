@@ -1,14 +1,16 @@
 const express = require("express");
-
-const app = express();
+const path = require("path");
+const usersRouter = require("./routes/users");
+const cardsRouter = require("./routes/cards");
 
 const { PORT = 3000 } = process.env;
+const app = express();
 
-app.get("/", (req, res) => {
-  res.send("<h1>Приветушки!</h1>");
+app.use("/", usersRouter);
+app.use("/", cardsRouter);
+app.use(express.static(path.join(__dirname, "public")));
+app.use((req, res) => {
+  res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
 });
 
-app.listen(PORT, () => {
-  console.log("Слушаем сервер:");
-  console.log(PORT);
-});
+app.listen(PORT);
