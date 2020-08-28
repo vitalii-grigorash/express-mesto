@@ -1,20 +1,13 @@
 const router = require("express").Router();
-const fs = require("fs").promises;
-const path = require("path");
-
-function getFile(file) {
-  return fs.readFile(file, { encoding: "utf8" });
-}
+const User = require("../models/user");
 
 const getUser = (req, res) => {
-  getFile(path.join(__dirname, "..", "data", "users.json"))
-    .then((data) => {
-      const newData = JSON.parse(data);
-      const userInfo = newData.find((user) => user._id === req.params.id);
-      if (!userInfo) {
+  User.findById(req.params.id)
+    .then((user) => {
+      if (!user) {
         res.status(404).send({ message: "Нет пользователя с таким id" });
       } else {
-        res.status(200).send(userInfo);
+        res.status(200).send(user);
       }
     })
     .catch((err) => {
@@ -23,9 +16,8 @@ const getUser = (req, res) => {
 };
 
 const getAllUsers = (req, res) => {
-  getFile(path.join(__dirname, "..", "data", "users.json"))
-    .then((data) => {
-      const users = JSON.parse(data);
+  User.find({})
+    .then((users) => {
       res.status(200).send(users);
     })
     .catch((err) => {
@@ -33,7 +25,16 @@ const getAllUsers = (req, res) => {
     });
 };
 
-router.get("/users/:id", getUser);
+const postUser = (req, res) => {
+  const { name, about, avatar } = req.body;
+
+  User.create({ name, about, avatar })
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+};
+
 router.get("/users", getAllUsers);
+router.get("/users/:id", getUser);
+router.post("/users", postUser);
 
 module.exports = router;
