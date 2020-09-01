@@ -5,25 +5,31 @@ const getCards = (req, res) => {
     .then((cards) => {
       res.status(200).send(cards);
     })
-    .catch((err) => {
-      res.status(500).send(err);
+    .catch(() => {
+      res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
 
 const postCard = (req, res) => {
   const { name, link } = req.body;
-  const owner = req.user._id;
+  const ownerId = req.user._id;
 
-  Card.create({ name, link, owner })
+  Card.create({ name, link, owner: ownerId })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch(() => res.status(400).send({ message: "Переданы некорректные данные" }));
 };
 
 const deleteCard = (req, res) => {
-  Card.findOneAndRemove(req.params.id)
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      res.status(500).send(err);
+  Card.findByIdAndDelete(req.params.cardId)
+    .then((card) => {
+      if (card) {
+        res.send({ data: card });
+        return;
+      }
+      res.status(404).send({ message: "Карточка не найдена" });
+    })
+    .catch(() => {
+      res.status(400).send({ message: "Переданы некорректные данные" });
     });
 };
 
@@ -33,9 +39,15 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      res.status(500).send(err);
+    .then((card) => {
+      if (card) {
+        res.send({ data: card });
+        return;
+      }
+      res.status(404).send({ message: "Карточка не найдена" });
+    })
+    .catch(() => {
+      res.status(400).send({ message: "Переданы некорректные данные" });
     });
 };
 
@@ -45,9 +57,15 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      res.status(500).send(err);
+    .then((card) => {
+      if (card) {
+        res.send({ data: card });
+        return;
+      }
+      res.status(404).send({ message: "Карточка не найдена" });
+    })
+    .catch(() => {
+      res.status(400).send({ message: "Переданы некорректные данные" });
     });
 };
 

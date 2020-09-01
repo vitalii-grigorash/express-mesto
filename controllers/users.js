@@ -19,8 +19,8 @@ const getAllUsers = (req, res) => {
     .then((users) => {
       res.status(200).send(users);
     })
-    .catch((err) => {
-      res.status(500).send(err);
+    .catch(() => {
+      res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
 
@@ -29,7 +29,7 @@ const postUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch(() => res.status(400).send({ message: "Переданы некорректные данные" }));
 };
 
 const updateUser = (req, res) => {
@@ -43,7 +43,7 @@ const updateUser = (req, res) => {
       }
       res.status(404).send({ message: "Нет пользователя с таким id" });
     })
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch(() => res.status(400).send({ message: "Переданы некорректные данные" }));
 };
 
 const updateAvatar = (req, res) => {
@@ -56,7 +56,7 @@ const updateAvatar = (req, res) => {
       }
       res.status(404).send({ message: "Нет пользователя с таким id" });
     })
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch(() => res.status(400).send({ message: "Переданы некорректные данные" }));
 };
 
 module.exports = {
