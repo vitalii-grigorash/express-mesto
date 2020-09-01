@@ -16,20 +16,27 @@ const postCard = (req, res) => {
 
   Card.create({ name, link, owner: ownerId })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(400).send({ message: "Переданы некорректные данные" }));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res.status(400).send({ message: "Переданы некорректные данные" });
+      } else {
+        res.status(500).send({ message: "Ошибка сервера" });
+      }
+    });
 };
 
 const deleteCard = (req, res) => {
   Card.findByIdAndDelete(req.params.cardId)
+    .orFail(new Error("NotValidCardId"))
     .then((card) => {
-      if (card) {
-        res.send({ data: card });
-        return;
-      }
-      res.status(404).send({ message: "Карточка не найдена" });
+      res.status(200).send({ data: card });
     })
-    .catch(() => {
-      res.status(400).send({ message: "Переданы некорректные данные" });
+    .catch((err) => {
+      if (err.message === "NotValidCardId") {
+        res.status(404).send({ message: "Карточка не найдена" });
+      } else {
+        res.status(400).send({ message: "Переданы некорректные данные" });
+      }
     });
 };
 
@@ -39,15 +46,16 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(new Error("NotValidCardId"))
     .then((card) => {
-      if (card) {
-        res.send({ data: card });
-        return;
-      }
-      res.status(404).send({ message: "Карточка не найдена" });
+      res.status(200).send({ data: card });
     })
-    .catch(() => {
-      res.status(400).send({ message: "Переданы некорректные данные" });
+    .catch((err) => {
+      if (err.message === "NotValidCardId") {
+        res.status(404).send({ message: "Карточка не найдена" });
+      } else {
+        res.status(400).send({ message: "Переданы некорректные данные" });
+      }
     });
 };
 
@@ -57,15 +65,16 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(new Error("NotValidCardId"))
     .then((card) => {
-      if (card) {
-        res.send({ data: card });
-        return;
-      }
-      res.status(404).send({ message: "Карточка не найдена" });
+      res.status(200).send({ data: card });
     })
-    .catch(() => {
-      res.status(400).send({ message: "Переданы некорректные данные" });
+    .catch((err) => {
+      if (err.message === "NotValidCardId") {
+        res.status(404).send({ message: "Карточка не найдена" });
+      } else {
+        res.status(400).send({ message: "Переданы некорректные данные" });
+      }
     });
 };
 
