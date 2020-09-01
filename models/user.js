@@ -23,6 +23,6 @@ const userSchema = new mongoose.Schema({
       message: "Invalid URL.",
     },
   },
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model("user", userSchema);
