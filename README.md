@@ -6,7 +6,6 @@
 
 * Node.js
 * Express
-* MongoDB
 
 ## Директории
 
